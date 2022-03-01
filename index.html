@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>eMaps</title>
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+		<script type="module" src="js/main.js"></script>
+	</head>
+	<body>
+		<div class="left-panel">
+			<div class="item">
+				<div class="label">Image source</div>
+				<div class="select-wrapper">
+					<select id="image_source"></select>
+				</div>
+			</div>
+			<div class="item">
+				<div class="label">Source mapping</div>
+				<div class="select-wrapper">
+					<select id="source_mapping"></select>
+				</div>
+			</div>
+			<div class="item">
+				<div class="label">Target mapping</div>
+				<div class="select-wrapper">
+					<select id="target_mapping"></select>
+				</div>
+			</div>
+		</div>
+		<div class="main">
+			<div class="canvas-wrapper">
+				<div>
+					<canvas></canvas>
+				</div>
+				<div class="buttons">
+					<input type="button" value="Reset">
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
