@@ -28,6 +28,15 @@ div.left-panel div.item select {
 	background-color: #ccc;
 	border: none;
 }
+div.left-panel div.item input[type="text"] {
+	--padding-left: 5px;
+	width: calc(var(--panel-width) - 35px - var(--padding-left));
+	height: 28px;
+	font-size: 16px;
+	background-color: #ccc;
+	border: none;
+	padding-left: var(--padding-left);
+}
 div.main {
 	position: absolute;
 	top: 0px;

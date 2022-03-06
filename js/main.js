@@ -6,27 +6,64 @@ import ColorPicker from './color-picker.js';
 const canvas = document.querySelector('canvas');
 const wrapper = document.querySelector('.canvas-wrapper');
 
-const select = {
-	img: document.querySelector('#image_source'),
-	srcMap: document.querySelector('#source_mapping'),
-	dstMap: document.querySelector('#target_mapping'),
+let canvasWidth = 512;
+let currentRatio;
+const updateRatio = (ratio) => {
+	currentRatio = ratio;
+	const width = canvasWidth;
+	const height = Math.round(width/ratio);
+	canvas.width = width;
+	canvas.height = height;
+	wrapper.style.width = width + 'px';
+	wrapper.style.height = height + 'px';
 };
-
-const images = `
-	AE-north.jpg
-	equirectangular.jpg
-	gall-peters.jpg
-`.trim().split(/\s*\n\s*/).map(
-	name => ({
-		name, img: null,
-		colorPicker: null,
-	}),
-);
 
 let colorPicker;
 let toNormal;
 let toCoord;
-let renderer;
+
+const renderer = new ShaderRenderer({
+	canvas,
+	box: [0, 1, 1, 0],
+	shader: (ax, ay, bx, by) => {
+		const x = (ax + bx)*0.5;
+		const y = (ay + by)*0.5;
+		const [ lat, lon ] = toCoord(x, y);
+		const [ px, py ] = toNormal(lat, lon);
+		return colorPicker.getPoint(px, py);
+	},
+});
+
+const renderIfReady = () => {
+	if (colorPicker == null) return;
+	if (toNormal == null) return;
+	if (toCoord == null) return;
+	renderer.update();
+};
+
+const select = {
+	img: document.querySelector('#image_source'),
+	src: document.querySelector('#source_mapping'),
+	dst: document.querySelector('#target_mapping'),
+};
+
+const colorPickerMap = {};
+const getColorPicker = async (name) => {
+	let colorPicker = colorPickerMap[name];
+	if (colorPicker !== undefined) {
+		return colorPicker;
+	}
+	const img = await loadImage(`./img/${name}`);
+	colorPicker = new ColorPicker(img);
+	colorPickerMap[name] = colorPicker;
+	return colorPicker;
+};
+
+const imageFiles = `
+	AE-north.jpg
+	equirectangular.jpg
+	gall-peters.jpg
+`.trim().split(/\s*\n\s*/);
 
 const retrieveImage = async (obj, index) => {
 	const { name } = obj;
@@ -36,64 +73,53 @@ const retrieveImage = async (obj, index) => {
 	obj.colorPicker = new ColorPicker(img);
 };
 
-const handleImgUpdate = () => {
-	const item = images[select.img.value];
-	colorPicker = item.colorPicker;
-	if (renderer) renderer.update();
+const handleImageUpdate = async () => {
+	const name = select.img.value;
+	colorPicker = await getColorPicker(name);
+	renderIfReady();
 };
 
 const handleSrcUpdate = () => {
-	const projection = Projections[select.srcMap.value];
-	toNormal = projection.toNormal;
-	if (renderer) renderer.update();
+	const index = select.src.value*1;
+	toNormal = Projections[index].toNormal;
+	renderIfReady();
 };
 
 const handleDstUpdate = () => {
-	const projection = Projections[select.dstMap.value];
+	const index = select.dst.value*1;
+	const projection = Projections[index];
 	toCoord = projection.toCoord;
-	canvas.height = Math.round(canvas.width/projection.ratio);
-	wrapper.style.height = canvas.height + 'px';
-	wrapper.style.width = canvas.width + 'px';
-	if (renderer) renderer.update();
-};
-
-const sortImages = () => {
-	const options = [ ...select.img.children ];
-	options.sort((a, b) => a.getAttribute('index') - b.getAttribute('index'));
-	select.img.innerHTML = options.map(option => option.outerHTML).join('');
+	updateRatio(projection.ratio);
+	renderIfReady();
 };
 
 const main = async() => {
+	updateRatio(1);
+	imageFiles.forEach(name => {
+		select.img.innerHTML += `<option value="${name}">${name}</option>`;
+	});
 	Projections.forEach((projection, index) => {
 		const { id, label } = projection;
 		const option = `<option value="${index}">${label}</option>`;
-		select.srcMap.innerHTML += option;
-		select.dstMap.innerHTML += option;
+		select.src.innerHTML += option;
+		select.dst.innerHTML += option;
 	});
-	await Promise.all(images.map(retrieveImage));
-	sortImages();
-	canvas.width = 512;
-	canvas.height = 512;
-	handleImgUpdate();
-	handleSrcUpdate();
-	handleDstUpdate();
-	renderer = new ShaderRenderer({
-		canvas,
-		box: [0, 1, 1, 0],
-		shader: (ax, ay, bx, by) => {
-			const x = (ax + bx)*0.5;
-			const y = (ay + by)*0.5;
-			const [ lat, lon ] = toCoord(x, y);
-			const [ px, py ] = toNormal(lat, lon);
-			return colorPicker.getPoint(px, py);
-		},
-	});
-	renderer.update();
-	document.querySelector('#image_source').oninput = handleImgUpdate;
-	document.querySelector('#source_mapping').oninput = handleSrcUpdate;
-	document.querySelector('#target_mapping').oninput = handleDstUpdate;
 	document.querySelector('.buttons input').onclick = () => {
 		renderer.reset();
+	};
+	handleImageUpdate();
+	handleSrcUpdate();
+	handleDstUpdate();
+	select.img.oninput = handleImageUpdate;
+	select.src.oninput = handleSrcUpdate;
+	select.dst.oninput = handleDstUpdate;
+	const inputWidth = document.querySelector('#canvas_width');
+	inputWidth.onchange = () => {
+		const { value } = inputWidth;
+		if (!/^\d+$/.test(value)) return;
+		canvasWidth = Number(value);
+		updateRatio(currentRatio);
+		renderIfReady();
 	};
 };
 
