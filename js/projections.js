@@ -49,8 +49,29 @@ const GallPeters = {
 	],
 };
 
+const AESouth = {
+	label: 'AE (south)',
+	ratio: 1,
+	toNormal: (lat, lon) => {
+		const rad = 0.25 + lat/D360;
+		const x = 0.5 + Math.sin(lon)*rad;
+		const y = 0.5 - Math.cos(lon)*rad;
+		return [ x, y ];
+	},
+	toCoord: (x, y) => {
+		const dx = x - 0.5;
+		const dy = 0.5 - y;
+		const rad = Math.sqrt(dx*dx + dy*dy);
+		const acos = Math.acos(dy/rad);
+		const lat = rad*D360 - D90;
+		const lon = dx >= 0 ? acos : - acos;
+		return [ lat, lon ];
+	},
+};
+
 export default [
 	AENorth,
 	Equirectangular,
 	GallPeters,
+	AESouth,
 ];
