@@ -47,16 +47,19 @@ const select = {
 	dst: document.querySelector('#target_mapping'),
 };
 
-const colorPickerMap = {};
-const getColorPicker = async (name) => {
-	let colorPicker = colorPickerMap[name];
-	if (colorPicker !== undefined) {
-		return colorPicker;
+const imgMap = {};
+const getImg = async (name) => {
+	let img = imgMap[name];
+	if (img !== undefined) {
+		return img;
 	}
-	const img = await loadImage(`./img/${name}`);
-	colorPicker = new ColorPicker(img);
-	colorPickerMap[name] = colorPicker;
-	return colorPicker;
+	img = await loadImage(`./img/${name}`);
+	imgMap[name] = img;
+	return img;
+};
+
+const getColorPicker = async (name) => {
+	return new ColorPicker(await getImg(name));
 };
 
 const imageFiles = `
