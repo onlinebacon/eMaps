@@ -6,7 +6,7 @@ import ColorPicker from './color-picker.js';
 const canvas = document.querySelector('canvas');
 const wrapper = document.querySelector('.canvas-wrapper');
 
-let canvasWidth = 512;
+let canvasWidth = 800;
 let currentRatio;
 const updateRatio = (ratio) => {
 	currentRatio = ratio;
@@ -125,6 +125,7 @@ const main = async() => {
 		updateRatio(currentRatio);
 		renderIfReady();
 	};
+	inputWidth.value = canvasWidth;
 };
 
 main().catch(console.error);
