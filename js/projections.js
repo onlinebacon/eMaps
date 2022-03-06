@@ -4,7 +4,6 @@ const D180 = Math.PI;
 const D360 = Math.PI*2;
 
 const AENorth = {
-	id: 'ae-north',
 	label: 'AE (North)',
 	ratio: 1,
 	toNormal: (lat, lon) => {
@@ -25,7 +24,6 @@ const AENorth = {
 };
 
 const Equirectangular = {
-	id: 'equirectangular',
 	label: 'Equirectangular',
 	ratio: 2,
 	toNormal: (lat, lon) => [
@@ -39,7 +37,6 @@ const Equirectangular = {
 };
 
 const GallPeters = {
-	id: 'gall-peters',
 	label: 'Gall-Peters',
 	ratio: Math.PI/2,
 	toNormal: (lat, lon) => [
