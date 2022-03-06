@@ -69,9 +69,23 @@ const AESouth = {
 	},
 };
 
+const Mercator = {
+	label: 'Mercator',
+	ratio: 1,
+	toNormal: (lat, lon) => [
+		0.5 + lon/D360,
+		0.5 - Math.log(Math.tan(D45 + lat/2))/D360,
+	],
+	toCoord: (x, y) => [
+		(Math.atan(Math.exp((0.5 - y)*D360)) - D45)*2,
+		x*D360 - D180,
+	],
+};
+
 export default [
 	AENorth,
 	Equirectangular,
 	GallPeters,
 	AESouth,
+	Mercator,
 ];

@@ -67,6 +67,7 @@ const imageFiles = `
 	equirectangular.jpg
 	gall-peters.jpg
 	AE-south.jpg
+	mercator.jpg
 `.trim().split(/\s*\n\s*/);
 
 const retrieveImage = async (obj, index) => {
