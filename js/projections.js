@@ -67,9 +67,8 @@ const AESouth = {
 		const dx = x - 0.5;
 		const dy = 0.5 - y;
 		const rad = sqrt(dx*dx + dy*dy);
-		const acos = acos(dy/rad);
 		const lat = rad*D360 - D90;
-		const lon = dx >= 0 ? acos : - acos;
+		const lon = dx >= 0 ? acos(dy/rad) : - acos(dy/rad);
 		return [ lat, lon ];
 	},
 };
