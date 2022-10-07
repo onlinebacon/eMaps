@@ -61,7 +61,6 @@ const imageFiles = `
 	gall-peters.jpg
 	AE-south.jpg
 	mercator.jpg
-	peirce-quincuncial.jpg
 `.trim().split(/\s*\n\s*/);
 
 const handleImageUpdate = async () => {

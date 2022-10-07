@@ -86,22 +86,10 @@ const Mercator = {
 	],
 };
 
-const PeirceQuincuncial = {
-	label: 'Peirce Quincuncial',
-	ratio: 1,
-	toNormal: (lat, lon) => {
-		return [ 0, 0 ];
-	},
-	toCoord: (x, y) => {
-		return [ 0, 0 ];
-	},
-};
-
 export default [
 	AENorth,
 	Equirectangular,
 	GallPeters,
 	AESouth,
 	Mercator,
-	PeirceQuincuncial,
 ];
