@@ -24,11 +24,14 @@ export default class ColorPicker {
 		this.colors = colors;
 	}
 	getPoint(nx, ny) {
+		if (isNaN(nx) || isNaN(ny)) {
+			return '#333';
+		}
 		const { width, height, colors } = this;
 		const x = nx*width|0;
 		const y = ny*height|0;
 		if (x < 0 || x >= width || y < 0 || y >= height) {
-			return '#777';
+			return '#333';
 		}
 		return colors[y*width + x];
 	}
