@@ -37,13 +37,12 @@ const xyzToCoord = ([ x, y, z ]) => {
 	return [ lat, lon ];
 };
 
-const coordToXYZ = ([ lat, lon ]) => {
+const coordToXYZ = ([ lat, lon ], dst = new Array(3)) => {
 	const rad = cos(lat);
-	return [
-		rad*sin(lon),
-		sin(lat),
-		rad*cos(lon),
-	];
+	dst[0] = rad*sin(lon);
+	dst[1] = sin(lat);
+	dst[2] = rad*cos(lon);
+	return dst;
 };
 
 const buildRollMatrix = (a, b, dst = new Array(9)) => {
@@ -114,12 +113,58 @@ const buildRollMatrix = (a, b, dst = new Array(9)) => {
     return dst;
 };
 
-export const transform = [
+const baseTransform = [
     1, 0, 0,
     0, 1, 0,
     0, 0, 1,
 ];
 
-export const translateCoord = (coord) => {
-    return xyzToCoord(mulVec3Mat3(coordToXYZ(coord), transform));
+const currentTransform = [
+	1, 0, 0,
+	0, 1, 0,
+	0, 0, 1,
+];
+
+const temp = [ 0, 0, 0 ];
+
+export const getStatic = (coord) => {
+	coordToXYZ(coord, temp);
+	mulVec3Mat3(temp, baseTransform, temp);
+    return xyzToCoord(temp);
+};
+
+export const getCurrent = (coord) => {
+	coordToXYZ(coord, temp);
+	mulVec3Mat3(temp, currentTransform, temp);
+    return xyzToCoord(temp);
+};
+
+export const applyMotion = (a, b) => {
+	buildRollMatrix(b, a, currentTransform);
+	mulMat3Mat3(
+		baseTransform,
+		currentTransform,
+		currentTransform,
+	);
+};
+
+export const fixMotion = (a, b) => {
+	buildRollMatrix(b, a, currentTransform);
+	mulMat3Mat3(
+		baseTransform,
+		currentTransform,
+		baseTransform,
+	);
+	for (let i=0; i<9; ++i) {
+		currentTransform[i] = baseTransform[i];
+	}
+};
+
+export const reset = () => {
+	baseTransform.fill(0);
+	currentTransform.fill(0);
+	for (let i=0; i<3; ++i){
+		baseTransform[i*4] = 1;
+		currentTransform[i*4] = 1;
+	}
 };
