@@ -111,6 +111,7 @@ const imageFiles = `
 	gall-peters.jpg
 	AE-south.jpg
 	mercator.jpg
+	basketball.jpg
 `.trim().split(/\s*\n\s*/);
 
 const handleImageUpdate = async () => {
