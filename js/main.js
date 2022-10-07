@@ -89,10 +89,14 @@ const main = async() => {
 		select.img.innerHTML += `<option value="${name}">${name}</option>`;
 	});
 	Projections.forEach((projection, index) => {
-		const { id, label } = projection;
+		const { id, label, toNormal, toCoord } = projection;
 		const option = `<option value="${index}">${label}</option>`;
-		select.src.innerHTML += option;
-		select.dst.innerHTML += option;
+		if (toNormal) {
+			select.src.innerHTML += option;
+		}
+		if (toCoord) {
+			select.dst.innerHTML += option;
+		}
 	});
 	document.querySelector('.buttons input').onclick = () => {
 		renderer.reset();
