@@ -47,15 +47,8 @@ const select = {
 	dst: document.querySelector('#target_mapping'),
 };
 
-const imgMap = {};
-const getImg = async (name) => {
-	let img = imgMap[name];
-	if (img !== undefined) {
-		return img;
-	}
-	img = await loadImage(`./img/${name}`);
-	imgMap[name] = img;
-	return img;
+const getImg = (name) => {
+	return loadImage(`./img/${name}`);
 };
 
 const getColorPicker = async (name) => {
@@ -70,14 +63,6 @@ const imageFiles = `
 	mercator.jpg
 	peirce-quincuncial.jpg
 `.trim().split(/\s*\n\s*/);
-
-const retrieveImage = async (obj, index) => {
-	const { name } = obj;
-	const img = await loadImage(`./img/${name}`);
-	select.img.innerHTML += `<option value="${index}">${name}</option>`;
-	obj.img = img;
-	obj.colorPicker = new ColorPicker(img);
-};
 
 const handleImageUpdate = async () => {
 	const name = select.img.value;
