@@ -86,10 +86,25 @@ const Mercator = {
 	],
 };
 
+const Globe = {
+	label: 'Globe (orthographic)',
+	ratio: 1,
+	toCoord: (x, y) => {
+		const dx = (x - 0.5)*2;
+		const dy = (0.5 - y)*2;
+		const rad = sqrt(dx*dx + dy*dy);
+		if (rad > 1) return [ NaN, NaN ];
+		const lat = asin(dy);
+		const lon = asin(dx/cos(lat));
+		return [ lat, lon ];
+	},
+};
+
 export default [
 	AENorth,
 	Equirectangular,
 	GallPeters,
 	AESouth,
 	Mercator,
+	Globe,
 ];
