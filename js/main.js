@@ -2,9 +2,12 @@ import ShaderRenderer from './shader-renderer.js';
 import loadImage from './load-image.js';
 import Projections from './projections.js';
 import ColorPicker from './color-picker.js';
+import * as GlobalTransform from './global-transform.js';
 
 const canvas = document.querySelector('canvas');
 const wrapper = document.querySelector('.canvas-wrapper');
+
+const LEFT_BUTTON_MASK = 1;
 
 let canvasWidth = 800;
 let currentRatio;
@@ -28,10 +31,57 @@ const renderer = new ShaderRenderer({
 	shader: (ax, ay, bx, by) => {
 		const x = (ax + bx)*0.5;
 		const y = (ay + by)*0.5;
-		const [ lat, lon ] = toCoord(x, y);
+		const [ lat, lon ] = GlobalTransform.getCurrent(toCoord(x, y));
 		const [ px, py ] = toNormal(lat, lon);
 		return colorPicker.getPoint(px, py);
 	},
+});
+
+let startClick = null;
+
+const releaseClick = (e) => {
+	if (startClick === null) return;
+	const x = e.offsetX;
+	const y = e.offsetY;
+	const coord = GlobalTransform.getStatic(
+		toCoord(...renderer.pxToVal(x, y)),
+	);
+	GlobalTransform.fixMotion(startClick.coord, coord);
+	startClick = null;
+	renderer.update();
+};
+
+canvas.addEventListener('mousedown', (e) => {
+	const x = e.offsetX;
+	const y = e.offsetY;
+	if (!e.ctrlKey || !(e.buttons & LEFT_BUTTON_MASK)) {
+		return;
+	}
+	const coord = GlobalTransform.getCurrent(
+		toCoord(...renderer.pxToVal(x, y)),
+	);
+	startClick = { coord };
+});
+
+canvas.addEventListener('mousemove', (e) => {
+	if (!(e.buttons & LEFT_BUTTON_MASK) || !startClick) {
+		releaseClick(e);
+		return;
+	}
+	const x = e.offsetX;
+	const y = e.offsetY;
+	const coord = GlobalTransform.getStatic(
+		toCoord(...renderer.pxToVal(x, y)),
+	);
+	GlobalTransform.applyMotion(startClick.coord, coord);
+	renderer.update();
+});
+
+canvas.addEventListener('mouseup', (e) => {
+	if (e.buttons & LEFT_BUTTON_MASK) {
+		releaseClick(e);
+		return;
+	}
 });
 
 const renderIfReady = () => {
@@ -99,6 +149,7 @@ const main = async() => {
 		}
 	});
 	document.querySelector('.buttons input').onclick = () => {
+		GlobalTransform.reset();
 		renderer.reset();
 	};
 	handleImageUpdate();

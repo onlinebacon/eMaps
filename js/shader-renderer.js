@@ -13,7 +13,7 @@ const freeThread = () => new Promise(done => setTimeout(done, 0));
 const bindCanvas = (canvas, renderer) => {
 	let startClick = null;
 	canvas.addEventListener('mousedown', e => {
-		if (e.button !== 0) {
+		if (e.button !== 0 || e.ctrlKey) {
 			return;
 		}
 		e.preventDefault();
