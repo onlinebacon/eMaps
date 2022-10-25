@@ -132,16 +132,18 @@ const handleImageUpdate = async () => {
 		return;
 	}
 	const input = document.createElement('input');
+	input.display = 'none';
 	input.setAttribute('type', 'file');
 	input.setAttribute('accept', 'image/*');
 	document.body.appendChild(input);
-	input.click();
 	input.onchange = async () => {
 		const [ file ] = input.files;
 		const img = await fileToImage(file);
 		colorPicker = new ColorPicker(img);
 		renderIfReady();
 	};
+	input.click();
+	input.remove();
 };
 
 const handleSrcUpdate = () => {
