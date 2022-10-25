@@ -111,12 +111,37 @@ const imageFiles = `
 	gall-peters.jpg
 	AE-south.jpg
 	mercator.jpg
+	custom
 `.trim().split(/\s*\n\s*/);
+
+const fileToImage = (file) => new Promise((done, fail) => {
+	const reader = new FileReader();
+	const img = document.createElement('img');
+	reader.onload = () => {
+		img.src = reader.result;
+		done(img);
+	};
+	reader.readAsDataURL(file);
+});
 
 const handleImageUpdate = async () => {
 	const name = select.img.value;
-	colorPicker = await getColorPicker(name);
-	renderIfReady();
+	if (name !== 'custom') {
+		colorPicker = await getColorPicker(name);
+		renderIfReady();
+		return;
+	}
+	const input = document.createElement('input');
+	input.setAttribute('type', 'file');
+	input.setAttribute('accept', 'image/*');
+	document.body.appendChild(input);
+	input.click();
+	input.onchange = async () => {
+		const [ file ] = input.files;
+		const img = await fileToImage(file);
+		colorPicker = new ColorPicker(img);
+		renderIfReady();
+	};
 };
 
 const handleSrcUpdate = () => {
