@@ -21,6 +21,9 @@ const AENorth = {
 		const dx = x - 0.5;
 		const dy = y - 0.5;
 		const rad = sqrt(dx*dx + dy*dy);
+		if (rad > 0.5) {
+			return [ NaN, NaN ];
+		}
 		return [
 			(0.5 - rad*2)*D180,
 			dx >= 0 ? acos(dy/rad) : - acos(dy/rad),
@@ -35,10 +38,15 @@ const Equirectangular = {
 		lon/D360 + 0.5,
 		0.5 - lat/D180,
 	],
-	toCoord: (x, y) => [
-		(0.5 - y)*D180,
-		(x - 0.5)*D360,
-	],
+	toCoord: (x, y) => {
+		if (x < 0 || x > 1 || y < 0 || y > 1) {
+			return [ NaN, NaN ];
+		}
+		return [
+			(0.5 - y)*D180,
+			(x - 0.5)*D360,
+		];
+	},
 };
 
 const GallPeters = {
@@ -48,10 +56,15 @@ const GallPeters = {
 		0.5 + lon/D360,
 		0.5 - sin(lat)*0.5,
 	],
-	toCoord: (x, y) => [
-		asin(1 - y*2),
-		(x - 0.5)*D360,
-	],
+	toCoord: (x, y) => {
+		if (x < 0 || x > 1 || y < 0 || y > 1) {
+			return [ NaN, NaN ];
+		}
+		return [
+			asin(1 - y*2),
+			(x - 0.5)*D360,
+		];
+	},
 };
 
 const AESouth = {
@@ -67,6 +80,9 @@ const AESouth = {
 		const dx = x - 0.5;
 		const dy = 0.5 - y;
 		const rad = sqrt(dx*dx + dy*dy);
+		if (rad > 0.5) {
+			return [ NaN, NaN ];
+		}
 		const lat = rad*D360 - D90;
 		const lon = dx >= 0 ? acos(dy/rad) : - acos(dy/rad);
 		return [ lat, lon ];
@@ -80,10 +96,15 @@ const Mercator = {
 		0.5 + lon/D360,
 		0.5 - log(tan(D45 + lat/2))/D360,
 	],
-	toCoord: (x, y) => [
-		(atan(exp((0.5 - y)*D360)) - D45)*2,
-		x*D360 - D180,
-	],
+	toCoord: (x, y) => {
+		if (x < 0 || x > 1 || y < 0 || y > 1) {
+			return [ NaN, NaN ];
+		}
+		return [
+			(atan(exp((0.5 - y)*D360)) - D45)*2,
+			x*D360 - D180,
+		];
+	},
 };
 
 const Globe = {
@@ -93,7 +114,9 @@ const Globe = {
 		const dx = (x - 0.5)*2;
 		const dy = (0.5 - y)*2;
 		const rad = sqrt(dx*dx + dy*dy);
-		if (rad > 1) return [ NaN, NaN ];
+		if (rad > 1) {
+			return [ NaN, NaN ];
+		}
 		const lat = asin(dy);
 		const lon = asin(dx/cos(lat));
 		return [ lat, lon ];
