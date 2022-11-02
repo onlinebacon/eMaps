@@ -125,9 +125,9 @@ const Globe = {
 
 export default [
 	AENorth,
+	AESouth,
 	Equirectangular,
 	GallPeters,
-	AESouth,
 	Mercator,
 	Globe,
 ];

@@ -107,9 +107,9 @@ const getColorPicker = async (name) => {
 
 const imageFiles = `
 	AE-north.jpg
+	AE-south.jpg
 	equirectangular.jpg
 	gall-peters.jpg
-	AE-south.jpg
 	mercator.jpg
 	custom
 `.trim().split(/\s*\n\s*/);
