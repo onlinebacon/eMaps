@@ -9,7 +9,7 @@ const D180 = PI;
 const D360 = PI*2;
 
 const AENorth = {
-	label: 'AE (North)',
+	label: 'Azm. Eq. (North)',
 	ratio: 1,
 	toNormal: (lat, lon) => {
 		const rad = 0.25 - lat/D360;
@@ -55,7 +55,7 @@ const GallPeters = {
 };
 
 const AESouth = {
-	label: 'AE (south)',
+	label: 'Azm. Eq. (South)',
 	ratio: 1,
 	toNormal: (lat, lon) => {
 		const rad = 0.25 + lat/D360;
