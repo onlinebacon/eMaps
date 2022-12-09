@@ -123,9 +123,34 @@ const Globe = {
 	},
 };
 
+const calcStereographicProjectedRadius = (maxLat) => {
+	return 2*cos(maxLat)/(1 + sin(maxLat));
+};
+
+const stereographicProjectedRadius = calcStereographicProjectedRadius(-D90/3);
+
+const Stereographic = {
+	label: 'Stereographic',
+	ratio: 1,
+	toCoord: (x, y) => {
+		const nx = x*2 - 1;
+		const ny = y*2 - 1;
+		const rad = sqrt(nx*nx + ny*ny);
+		const lon = acos(ny/rad)*(nx >= 0 ? 1 : -1);
+		const r = rad*stereographicProjectedRadius;
+		const mSqr = r*r/4;
+		const a = 1 + mSqr;
+		const b = 2*mSqr;
+		const c = mSqr - 1;
+		const lat = asin((sqrt(b*b - 4*a*c) - b)/(2*a));
+		return [ lat, lon ];
+	},
+};
+
 export default [
 	AENorth,
 	AESouth,
+	Stereographic,
 	Equirectangular,
 	GallPeters,
 	Mercator,
