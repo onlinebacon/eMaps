@@ -108,6 +108,7 @@ const getColorPicker = async (name) => {
 const imageFiles = `
 	AE-north.jpg
 	AE-south.jpg
+	stereographic.jpg
 	equirectangular.jpg
 	gall-peters.jpg
 	mercator.jpg

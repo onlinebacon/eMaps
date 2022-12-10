@@ -145,6 +145,12 @@ const Stereographic = {
 		const lat = asin((sqrt(b*b - 4*a*c) - b)/(2*a));
 		return [ lat, lon ];
 	},
+	toNormal: (lat, lon) => {
+		const rad = cos(lat)/((1 + sin(lat))*stereographicProjectedRadius);
+		const nx = 0.5 + sin(lon)*rad;
+		const ny = 0.5 + cos(lon)*rad;
+		return [ nx, ny ];
+	},
 };
 
 export default [
